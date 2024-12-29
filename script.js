@@ -8,6 +8,7 @@ class RenderManager {
         const clearAllButton = document.getElementById("clear-all");
         submitButton.addEventListener("click", this.#handleNewItem.bind(this));
         clearAllButton.addEventListener("click", () => {this.#handleClearAll();});
+        this.#render();
     }
 
     #render() {
@@ -114,13 +115,30 @@ class RenderManager {
     }
 
 }
+const TODOS_LOCAL_STORAGE_KEY = "TODOS_LOCAL_STORAGE_KEY";
 
 class ListManager{
-    missions = [];
+    constructor(){
+        this.missions = this.#loadTodos();
+    }
+
+    #loadTodos(){
+        const storedTodos = localStorage.getItem(TODOS_LOCAL_STORAGE_KEY);
+        if (!storedTodos){
+            return [];
+        }
+        return JSON.parse(storedTodos);
+    }
+
+    #storeTodos(){
+        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(this.missions));
+    }
+
 
     insertNewMision(name, date){
         const item = new ListItem(name, date);
         this.missions.push(item);
+        this.#storeTodos();
     }
 
     updateStatus(missionID){
@@ -129,10 +147,12 @@ class ListManager{
                 mission.is_finished = !mission.is_finished;
             }
         }
+        this.#storeTodos();
     }
 
     clearList(){
         this.missions = [];
+        this.#storeTodos();
     }
 
     deleteMission(missionID){
@@ -144,6 +164,7 @@ class ListManager{
             }
             idx += 1;
         }
+        this.#storeTodos();
     }
 }
 
