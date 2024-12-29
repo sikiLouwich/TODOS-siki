@@ -18,7 +18,7 @@ class RenderManager {
         finishedConteiner.innerHTML = "";
         unFinishedConteiner.innerHTML = "";
 
-        for(const miss of this.#list.missions){
+        for(const miss of this.#list.getTodos()){
             const element = this.#createMissionElement(miss);
             if(miss.is_finished){
                 finishedConteiner.appendChild(element);
@@ -118,8 +118,8 @@ class RenderManager {
 const TODOS_LOCAL_STORAGE_KEY = "TODOS_LOCAL_STORAGE_KEY";
 
 class ListManager{
-    constructor(){
-        this.missions = this.#loadTodos();
+    getTodos(){
+        return this.#loadTodos();
     }
 
     #loadTodos(){
@@ -130,41 +130,43 @@ class ListManager{
         return JSON.parse(storedTodos);
     }
 
-    #storeTodos(){
-        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(this.missions));
+    #storeTodos(todos){
+        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(todos));
     }
 
 
     insertNewMision(name, date){
         const item = new ListItem(name, date);
-        this.missions.push(item);
-        this.#storeTodos();
+        const todos = this.getTodos();
+        todos.push(item);
+        this.#storeTodos(todos);
     }
 
     updateStatus(missionID){
-        for(const mission of this.missions){
+        const todos = this.getTodos();
+        for(const mission of todos){
             if(mission.id === missionID){
                 mission.is_finished = !mission.is_finished;
             }
         }
-        this.#storeTodos();
+        this.#storeTodos(todos);
     }
 
     clearList(){
-        this.missions = [];
-        this.#storeTodos();
+        this.#storeTodos([]);
     }
 
     deleteMission(missionID){
         let idx = 0;
-        for(const mission of this.missions){
+        const todos = this.getTodos();
+        for(const mission of todos){
             if (mission.id === missionID){
-                this.missions.splice(idx, 1);
+                todos.splice(idx, 1);
                 break
             }
             idx += 1;
         }
-        this.#storeTodos();
+        this.#storeTodos(todos);
     }
 }
 
