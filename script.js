@@ -20,9 +20,9 @@ class RenderManager {
         for(const miss of this.#list.missions){
             const element = this.#createMissionElement(miss);
             if(miss.is_finished){
-                this.#addMissionToFinished(element);
+                finishedConteiner.appendChild(element);
             }else{
-                this.#addMissionToUnfinished(element);
+                unFinishedConteiner.appendChild(element);
             }
         }
     }
@@ -74,14 +74,6 @@ class RenderManager {
         document.getElementById("missionDate").value = "";
 
         this.#render();
-    }
-
-    #addMissionToUnfinished(mission) {
-        unFinishedConteiner.appendChild(mission);
-    }
-
-    #addMissionToFinished(mission) {
-        finishedConteiner.appendChild(mission);
     }
 
     #createMissionElement(mission) {
