@@ -1,7 +1,8 @@
 
+
+
 class RenderManager {
     #list = new ListManager();
-
 
     constructor() {
         const submitButton = document.getElementById("addMission");
@@ -52,7 +53,6 @@ class RenderManager {
         const [year, month, day] = inputDate.split('-');
         return `${day}/${month}/${year}`;
     }
-
 
     #handleNewItem() {
         const name = document.getElementById("missionName").value.trim();
@@ -118,9 +118,19 @@ class RenderManager {
 const TODOS_LOCAL_STORAGE_KEY = "TODOS_LOCAL_STORAGE_KEY";
 
 class ListManager{
-    getTodos(){
-        return this.#loadTodos();
+    #todosList;
+
+    constructor(){
+        this.#todosList = this.#loadTodos();
+        window.addEventListener("beforeunload", () => {
+            this.#storeTodos();
+        })
     }
+    
+    getTodos(){
+        return this.#todosList;
+    }
+
 
     #loadTodos(){
         const storedTodos = localStorage.getItem(TODOS_LOCAL_STORAGE_KEY);
@@ -130,46 +140,39 @@ class ListManager{
         return JSON.parse(storedTodos);
     }
 
-    #storeTodos(todos){
-        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(todos));
+    #storeTodos(){
+        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(this.#todosList));
     }
 
 
     insertNewMision(name, date){
         const item = new ListItem(name, date);
-        const todos = this.getTodos();
-        todos.push(item);
-        this.#storeTodos(todos);
+        this.#todosList.push(item);
     }
 
     updateStatus(missionID){
-        const todos = this.getTodos();
-        for(const mission of todos){
+        for(const mission of this.#todosList){
             if(mission.id === missionID){
                 mission.is_finished = !mission.is_finished;
             }
         }
-        this.#storeTodos(todos);
     }
 
     clearList(){
-        this.#storeTodos([]);
+        this.#todosList = [];
     }
 
     deleteMission(missionID){
         let idx = 0;
-        const todos = this.getTodos();
-        for(const mission of todos){
+        for(const mission of this.#todosList){
             if (mission.id === missionID){
-                todos.splice(idx, 1);
+                this.#todosList.splice(idx, 1);
                 break
             }
             idx += 1;
         }
-        this.#storeTodos(todos);
     }
 }
-
 
 class ListItem {
     constructor(name, date, is_finished=false) {
@@ -179,6 +182,5 @@ class ListItem {
         this.is_finished = is_finished;
     }
 }
-
 
 const manager = new RenderManager();
