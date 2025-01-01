@@ -2,25 +2,32 @@
 
 
 class RenderManager {
-    #list = new ListManager();
+    private list = new ListManager();
 
     constructor() {
         const submitButton = document.getElementById("addMission");
         const clearAllButton = document.getElementById("clear-all");
-        submitButton.addEventListener("click", this.#handleNewItem.bind(this));
-        clearAllButton.addEventListener("click", () => {this.#handleClearAll();});
-        this.#render();
+        if (!submitButton || ! clearAllButton){
+            console.error("SubmitButton or clearAllButton must be part of the DOM!");
+            return;
+        }
+        submitButton.addEventListener("click", this.handleNewItem.bind(this));
+        clearAllButton.addEventListener("click", () => {this.handleClearAll();});
+        this.render();
     }
 
-    #render() {
-        const unFinishedConteiner = document.getElementById("unfinishedMissions")
-        const finishedConteiner = document.getElementById("finishedMissions")
-
+    private render() {
+        const unFinishedConteiner = document.getElementById("unfinishedMissions");
+        const finishedConteiner = document.getElementById("finishedMissions");
+        if (!unFinishedConteiner || ! finishedConteiner){
+           console.error("one of - unFinishedConteiner or finishedConteiner (or both) are missing from DOM!")
+            return;
+        }
         finishedConteiner.innerHTML = "";
         unFinishedConteiner.innerHTML = "";
 
-        for(const miss of this.#list.getTodos()){
-            const element = this.#createMissionElement(miss);
+        for(const miss of this.list.getTodos()){
+            const element = this.createMissionElement(miss);
             if(miss.is_finished){
                 finishedConteiner.appendChild(element);
             }else{
@@ -29,19 +36,19 @@ class RenderManager {
         }
     }
  
-    #handleClearAll() {
+    private handleClearAll() {
         const confirmation = confirm("Are you sure about it?");
         if(confirmation){
-            this.#clearAllLists();
+            this.clearAllLists();
         }
     }
 
-    #clearAllLists() {
-        this.#list.clearList();
-        this.#render();
+    private clearAllLists() {
+        this.list.clearList();
+        this.render();
     }
 
-    #validateDate(inputDate) {
+    private validateDate(inputDate : string) {
         const year = Number(inputDate.split('-')[0]);
         if(year < 2000 || year > 2030){
             return false;
@@ -49,35 +56,39 @@ class RenderManager {
         return true;
     }
 
-    #formatDateToDDMMYYYY(inputDate){
+    private formatDateToDDMMYYYY(inputDate: string){
         const [year, month, day] = inputDate.split('-');
         return `${day}/${month}/${year}`;
     }
 
-    #handleNewItem() {
-        const name = document.getElementById("missionName").value.trim();
-        const date = document.getElementById("missionDate").value;
+    private handleNewItem() {
+        const nameInput = document.getElementById("missionName") as HTMLInputElement;
+        const dateInput = document.getElementById("missionDate") as HTMLInputElement;
 
-        if (!this.#validateDate(date)){
+        if (!nameInput || ! dateInput || !dateInput.value.trim() || !nameInput.value.trim()){
+            alert("You need to fill both date and name!");
+            return;
+        }
+        
+        const name = nameInput.value.trim();
+        const date = dateInput.value;
+        
+        if (!this.validateDate(date)){
             alert("year must be in range [2000, 2030]");
             return;
         }
         
-        if (!name || !date){
-            alert("you need to fill both date and name!");
-            return;
-        }
-        const formatDate = this.#formatDateToDDMMYYYY(date);
-        this.#list.insertNewMision(name, formatDate);
+        const formatDate = this.formatDateToDDMMYYYY(date);
+        this.list.insertNewMision(name, formatDate);
 
         //this is clean the cell of name and date
-        document.getElementById("missionName").value = "";
-        document.getElementById("missionDate").value = "";
+        nameInput.value= "";
+        dateInput.value = "";
 
-        this.#render();
+        this.render();
     }
 
-    #createMissionElement(mission) {
+    private createMissionElement(mission: ListItem) {
         const curDiv = document.createElement("div");
         curDiv.className = "mission-item";
 
@@ -97,13 +108,13 @@ class RenderManager {
 
         button.addEventListener("click", () =>
         {
-            this.#list.updateStatus(mission.id)
-            this.#render();
+            this.list.updateStatus(mission.id)
+            this.render();
         });
 
         deleteButton.addEventListener("click", () => {
-            this.#list.deleteMission(mission.id);
-            this.#render();
+            this.list.deleteMission(mission.id);
+            this.render();
         });
 
         buttonDiv.appendChild(button);
@@ -118,21 +129,21 @@ class RenderManager {
 const TODOS_LOCAL_STORAGE_KEY = "TODOS_LOCAL_STORAGE_KEY";
 
 class ListManager{
-    #todosList;
+    private todosList;
 
     constructor(){
-        this.#todosList = this.#loadTodos();
+        this.todosList = this.loadTodos();
         window.addEventListener("beforeunload", () => {
-            this.#storeTodos();
+            this.storeTodos();
         })
     }
     
     getTodos(){
-        return this.#todosList;
+        return this.todosList;
     }
 
 
-    #loadTodos(){
+    private loadTodos(){
         const storedTodos = localStorage.getItem(TODOS_LOCAL_STORAGE_KEY);
         if (!storedTodos){
             return [];
@@ -140,18 +151,18 @@ class ListManager{
         return JSON.parse(storedTodos);
     }
 
-    #storeTodos(){
-        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(this.#todosList));
+    private storeTodos(){
+        localStorage.setItem(TODOS_LOCAL_STORAGE_KEY, JSON.stringify(this.todosList));
     }
 
 
-    insertNewMision(name, date){
+    insertNewMision(name: string, date: string){
         const item = new ListItem(name, date);
-        this.#todosList.push(item);
+        this.todosList.push(item);
     }
 
-    updateStatus(missionID){
-        for(const mission of this.#todosList){
+    updateStatus(missionID: string){
+        for(const mission of this.todosList){
             if(mission.id === missionID){
                 mission.is_finished = !mission.is_finished;
             }
@@ -159,14 +170,14 @@ class ListManager{
     }
 
     clearList(){
-        this.#todosList = [];
+        this.todosList = [];
     }
 
-    deleteMission(missionID){
+    deleteMission(missionID: string){
         let idx = 0;
-        for(const mission of this.#todosList){
+        for(const mission of this.todosList){
             if (mission.id === missionID){
-                this.#todosList.splice(idx, 1);
+                this.todosList.splice(idx, 1);
                 break
             }
             idx += 1;
@@ -175,7 +186,12 @@ class ListManager{
 }
 
 class ListItem {
-    constructor(name, date, is_finished=false) {
+    id: string;
+    name: string;
+    date: string;
+    is_finished: boolean;
+
+    constructor(name: string, date: string, is_finished: boolean = false) {
         this.id = crypto.randomUUID();
         this.name = name;
         this.date = date;
