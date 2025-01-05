@@ -4,6 +4,7 @@
   "description": "",
   "main": "script.js",
   "scripts": {
+    "watch":"tsc -w & node --watch ./dist/server.js" ,
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "postbuild": "echo \"==Post-build ==\" && cp ./src/index.html ./dist/index.html && cp ./src/style.css ./dist/style.css",
