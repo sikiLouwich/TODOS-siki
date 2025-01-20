@@ -1,0 +1,133 @@
+/* General styling */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  display: grid;
+}
+
+/* Header and buttons */
+#insert-mission {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+#insert-mission input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#insert-mission button {
+  padding: 0.5rem 1rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#insert-mission button:hover {
+  background-color: #555;
+}
+
+/* Section headers */
+.notFinished h2,
+.finished h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Todo list container */
+.listsOfTodos ul {
+  list-style-type: none; /* Remove default bullet points */
+  padding: 0;
+
+}
+
+.listsOfTodos li {
+  display: flex;
+  align-items: center; /* Vertically center items */
+  justify-content: space-between; /* Push content to edges */
+  margin-bottom: 1rem; /* Add spacing between items */
+  padding: 0.5rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #222;
+}
+
+/* Todo details on the left */
+.listsOfTodos .todoDetails {
+  display: flex;
+  align-items: center; /* Align text with the dot */
+}
+
+.listsOfTodos .todoDetails span {
+  margin-right: 0.5rem; /* Add space after the dot */
+}
+
+.listsOfTodos .todoDetails strong {
+  margin-right: 0.5rem; /* Add space between name and date */
+}
+
+/* Buttons on the right */
+.listsOfTodos .todoActions button {
+  margin-left: 0.5rem; /* Add spacing between buttons */
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Specific button colors */
+.deleteOneTodos {
+  background-color: #db1a95;
+  color: white;
+}
+
+.deleteOneTodos:hover {
+  background-color: #b0157a;
+}
+
+.finishedButton {
+  background-color: #5562a6;
+  color: white;
+  width: 120px;
+  text-align: center;
+}
+
+.finishedButton:hover {
+  background-color: #3e4d7a;
+}
+
+.unfinishedButton {
+  background-color: #468c5a;
+  color: white;
+  width: 120px;
+  text-align: center;
+}
+
+.unfinishedButton:hover {
+  background-color: #356d46;
+}
+
+/* Overall page styling */
+body {
+  background-color: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  transition: background-color 0.3s ease;
+}
