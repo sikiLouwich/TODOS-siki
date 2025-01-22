@@ -6,5 +6,5 @@ import Todos from "./todos/todosList.tsx"
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Todos/>
-  </StrictMode>,
+  </StrictMode>
 )
