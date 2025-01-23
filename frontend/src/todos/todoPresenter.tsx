@@ -1,5 +1,8 @@
 import { Todo } from './todo';
 
+function formatDate(date: Date): string {
+  return new Date(date).toISOString().split('T')[0];
+}
 function TodoPresenter({
   todo,
   onToggle,
@@ -15,7 +18,7 @@ function TodoPresenter({
         <strong>{todo.name}</strong>
       </div>
       <div className="todoActions">
-        {todo.date.toDateString()}
+        {formatDate(todo.date)}
         <button
           className={todo.isFinished ? 'finishedButton' : 'unfinishedButton'}
           onClick={onToggle}

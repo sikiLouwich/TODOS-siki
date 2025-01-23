@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 interface TodoInputProps {
   handleAddTodo: (name: string, date: Date) => void;
   handleDeleteAll: () => void;

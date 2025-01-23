@@ -9,8 +9,6 @@ export interface TodosListProps {
 }
 
 function TodosListPresenter(props: TodosListProps) {
-  const onToggle = props.onToggle;
-  const onDelete = props.onDelete;
   return (
     <div className={props.isFinished ? 'finished' : 'notFinished'}>
       <h2>{props.isFinished ? 'Finished Tasks' : 'Not Finished Tasks'}</h2>
@@ -21,8 +19,8 @@ function TodosListPresenter(props: TodosListProps) {
             <TodoPresenter
               key={todo.id}
               todo={todo}
-              onToggle={() => onToggle(todo.id)}
-              onDelete={() => onDelete(todo.id)}
+              onToggle={() => props.onToggle(todo.id)}
+              onDelete={() => props.onDelete(todo.id)}
             />
           ))}
       </ul>

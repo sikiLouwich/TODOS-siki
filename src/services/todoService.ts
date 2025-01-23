@@ -33,7 +33,7 @@ export class TodoService{
         }
         for(const mission of this.todos){
             if(mission.id === missionToToggle){
-                mission.is_finished = !mission.is_finished;
+                mission.isFinished = !mission.isFinished;
                 return mission;
             }
         }
@@ -51,12 +51,12 @@ class ListItem {
     id: string;
     name: string;
     date: Date;
-    is_finished: boolean;
+    isFinished: boolean;
 
-    constructor(name: string, date: Date, is_finished: boolean = false) {
+    constructor(name: string, date: Date, isFinished: boolean = false) {
         this.id = crypto.randomUUID();
         this.name = name;
         this.date = date;
-        this.is_finished = is_finished;
+        this.isFinished = isFinished;
     }
 }
