@@ -5,12 +5,23 @@ import { Todo } from './todo';
 import TodosListPresenter from './todoListPresenter';
 import Spinner from './spinner';
 
+const MESSAGE_POST = ", please try again or check your network connection"
 const URL = 'http://localhost:3000/api/todos/';
+
 type TodosStates =
   | { status: 'idle' }
-  | { status: 'pending'; peviusData: Array<Todo> }
+  | { status: 'pending' }
   | { status: 'failed'; error: string }
   | { status: 'loaded'; data: Array<Todo> };
+
+function createDummyTodo(name: string, date: Date): Todo {
+  return {
+    id: crypto.randomUUID(),
+    isFinished: false,
+    name: name,
+    date: date,
+  };
+}
 
 function TodosList() {
   const [todos, setTodos] = useState<TodosStates>({ status: 'idle' });
@@ -20,10 +31,11 @@ function TodosList() {
   }, []);
 
   async function getTodos() {
+    setTodos({ status: 'pending' });
     try {
       const response = await fetch(URL);
       if (!response.ok) {
-        throw new Error('Error fetching todos');
+        throw new Error('Failed to fetching todos');
       }
       const data = await response.json();
       setTodos({ status: 'loaded', data });
@@ -33,8 +45,11 @@ function TodosList() {
   }
 
   async function handleAddTodo(name: string, date: Date) {
-    if (todos.status !== 'loaded') return;
-    setTodos({ status: 'pending', peviusData: todos.data });
+    if (todos.status !== 'loaded') {
+      return;
+    }
+    const dummyTodo = createDummyTodo(name, date);
+    setTodos({ status: 'loaded', data: [...todos.data, dummyTodo] });
 
     try {
       const response = await fetch(URL, {
@@ -43,65 +58,102 @@ function TodosList() {
         body: JSON.stringify({ name, date }),
       });
       if (!response.ok) {
-        throw new Error('Error adding todos!');
+        throw new Error(`Error adding todos${MESSAGE_POST}`);
       }
       const newTodo = await response.json();
-      setTodos({ status: 'loaded', data: [...todos.data, newTodo] });
+
+      setTodos((currentTodos) => {
+        if (currentTodos.status !== 'loaded') {
+          return currentTodos;
+        }
+        return {
+          status: 'loaded',
+          data: currentTodos.data.map((todo) =>
+            todo.id === dummyTodo.id ? { ...todo, id: newTodo.id } : todo
+          ),
+        };
+      });
     } catch (error: any) {
-      setTodos({ status: 'failed', error: error.message });
+      setTodos((currentTodos) => {
+        if (currentTodos.status !== 'loaded') {
+          return currentTodos;
+        }
+        return {
+          status: 'loaded',
+          data: currentTodos.data.filter((todo) => todo.id !== dummyTodo.id),
+        };
+      });
+      alert(error.message)
     }
   }
 
   async function handleToggle(todoId: string) {
-    if (todos.status !== 'loaded') return;
-    setTodos({ status: 'pending', peviusData: todos.data });
-
+    if (todos.status !== 'loaded') {
+      return;
+    }
+    setTodos({
+      status: 'loaded',
+      data: todos.data.map((todo) =>
+        todo.id === todoId ? { ...todo, isFinished: !todo.isFinished } : todo
+      ),
+    });
     try {
       const response = await fetch(`${URL}${todoId}`, { method: 'PATCH' });
       if (!response.ok) {
-        throw new Error('Error toggling todos!');
+        throw new Error(`Error toggling todos!${MESSAGE_POST}`);
       }
-      setTodos({
-        status: 'loaded',
-        data: todos.data.map((todo) =>
-          todo.id === todoId ? { ...todo, isFinished: !todo.isFinished } : todo
-        ),
-      });
     } catch (error: any) {
-      setTodos({ status: 'failed', error: error.message });
+      getTodos();
+      alert(error.message)
     }
   }
 
   async function handleDelete(todoId: string) {
     if (todos.status !== 'loaded') return;
-    setTodos({ status: 'pending', peviusData: todos.data });
+    const todoBackup = todos.data.find((todo) => todo.id === todoId);
+
+    setTodos({
+      status: 'loaded',
+      data: todos.data.filter((todo) => todo.id !== todoId),
+    });
 
     try {
       const response = await fetch(`${URL}${todoId}`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error('Error deleting todos!');
       }
-      setTodos({
-        status: 'loaded',
-        data: todos.data.filter((todo) => todo.id !== todoId),
-      });
     } catch (error: any) {
-      setTodos({ status: 'failed', error: error.message });
+      setTodos((currentTodos) => {
+        if (currentTodos.status !== 'loaded') return currentTodos;
+        return {
+          status: 'loaded',
+          data: [...currentTodos.data, todoBackup] as Todo[],
+        };
+      });
+      alert(error.message)
     }
   }
 
   async function handleDeleteAll() {
     if (todos.status !== 'loaded') return;
-    setTodos({ status: 'pending', peviusData: todos.data });
-
+    const todosBackup = [...todos.data];
+    setTodos({ status: 'loaded', data: [] });
     try {
       const response = await fetch(`${URL}/all`, { method: 'DELETE' });
       if (!response.ok) {
-        throw new Error('Error deleting all todos!');
+        throw new Error(`Error deleting all todos!${MESSAGE_POST}`);
       }
-      setTodos({ status: 'loaded', data: [] });
     } catch (error: any) {
-      setTodos({ status: 'failed', error: error.message });
+      setTodos((currentTodos) => {
+        if (currentTodos.status !== 'loaded') {
+          return currentTodos;
+        }
+        return {
+          status: 'loaded',
+          data: todosBackup,
+        };
+      });
+      alert(error.message)
     }
   }
 
@@ -112,54 +164,31 @@ function TodosList() {
       return <div>Error: {todos.error}</div>;
     case 'loaded':
       return (
-        <TodosConteiner
-          isPending={false}
+        <BodyPresenter
           todos={todos.data}
           handleAddTodo={handleAddTodo}
           handleDeleteAll={handleDeleteAll}
-          handleDelete={handleDelete}
           handleToggle={handleToggle}
+          handleDelete={handleDelete}
         />
       );
     case 'pending':
-      return (
-        <TodosConteiner
-          isPending={true}
-          todos={todos.peviusData}
-          handleAddTodo={handleAddTodo}
-          handleDeleteAll={handleDeleteAll}
-          handleDelete={handleDelete}
-          handleToggle={handleToggle}
-        />
-      );
+      return <Spinner />;
   }
 }
 
-interface TodosConteinerProps {
-  isPending: boolean;
+interface TodosContainer {
   todos: Todo[];
   handleAddTodo: (name: string, date: Date) => void;
   handleDeleteAll: () => void;
-  handleDelete: (todoId: string) => void;
   handleToggle: (todoId: string) => void;
+  handleDelete: (todoId: string) => void;
 }
 
-function TodosConteiner(prpos: TodosConteinerProps) {
+function BodyPresenter(prpos: TodosContainer) {
   return (
     <>
-      {prpos.isPending && <Spinner />}
-      <div
-        style={{
-          pointerEvents: prpos.isPending ? 'none' : 'auto',
-          opacity: prpos.isPending ? 0.5 : 1,
-        }}
-        onKeyDown={event => {
-          if(prpos.isPending){
-            event.preventDefault();
-            event.stopPropagation();
-          }
-        }}
-      >
+      <div>
         <TodoInput
           handleAddTodo={prpos.handleAddTodo}
           handleDeleteAll={prpos.handleDeleteAll}
