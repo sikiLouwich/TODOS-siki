@@ -15,3 +15,6 @@ export default function Spinner() {
     </div>
   );
 }
+
+//this is for checking the loading state of the app
+//wip
