@@ -6,7 +6,7 @@ import TodosListPresenter from './todoListPresenter';
 import Spinner from './spinner';
 
 const MESSAGE_POST = ", please try again or check your network connection"
-const URL = 'http://localhost:3000/api/todos/';
+const URL = '/todos/';
 
 type TodosStates =
   | { status: 'idle' }
@@ -17,7 +17,7 @@ type TodosStates =
 function createDummyTodo(name: string, date: Date): Todo {
   return {
     id: crypto.randomUUID(),
-    isFinished: false,
+    isfinished: false,
     name: name,
     date: date,
   };
@@ -94,13 +94,13 @@ function TodosList() {
     setTodos({
       status: 'loaded',
       data: todos.data.map((todo) =>
-        todo.id === todoId ? { ...todo, isFinished: !todo.isFinished } : todo
+        todo.id === todoId ? { ...todo, isfinished: !todo.isfinished } : todo
       ),
     });
     try {
       const response = await fetch(`${URL}${todoId}`, { method: 'PATCH' });
       if (!response.ok) {
-        throw new Error(`Error toggling todos!${MESSAGE_POST}`);
+        throw new Error(`Error toggling todos! ${MESSAGE_POST}`);
       }
     } catch (error: any) {
       getTodos();
@@ -139,7 +139,7 @@ function TodosList() {
     const todosBackup = [...todos.data];
     setTodos({ status: 'loaded', data: [] });
     try {
-      const response = await fetch(`${URL}/all`, { method: 'DELETE' });
+      const response = await fetch(`${URL}all`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error(`Error deleting all todos!${MESSAGE_POST}`);
       }
@@ -185,26 +185,26 @@ interface TodosContainer {
   handleDelete: (todoId: string) => void;
 }
 
-function BodyPresenter(prpos: TodosContainer) {
+function BodyPresenter(props: TodosContainer) {
   return (
     <>
-      <div>
+      <div className="todosContainer">
         <TodoInput
-          handleAddTodo={prpos.handleAddTodo}
-          handleDeleteAll={prpos.handleDeleteAll}
+          handleAddTodo={props.handleAddTodo}
+          handleDeleteAll={props.handleDeleteAll}
         />
         <div className="listsOfTodos">
           <TodosListPresenter
-            todos={prpos.todos}
-            isFinished={false}
-            onToggle={prpos.handleToggle}
-            onDelete={prpos.handleDelete}
+            todos={props.todos}
+            isfinished={false}
+            onToggle={props.handleToggle}
+            onDelete={props.handleDelete}
           />
           <TodosListPresenter
-            todos={prpos.todos}
-            isFinished={true}
-            onToggle={prpos.handleToggle}
-            onDelete={prpos.handleDelete}
+            todos={props.todos}
+            isfinished={true}
+            onToggle={props.handleToggle}
+            onDelete={props.handleDelete}
           />
         </div>
       </div>

@@ -3,18 +3,18 @@ import { Todo } from './todo';
 
 export interface TodosListProps {
   todos: Todo[];
-  isFinished: boolean;
+  isfinished: boolean;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
 function TodosListPresenter(props: TodosListProps) {
   return (
-    <div className={props.isFinished ? 'finished' : 'notFinished'}>
-      <h2>{props.isFinished ? 'Finished Tasks' : 'Not Finished Tasks'}</h2>
+    <div className={props.isfinished ? 'finished' : 'notFinished'}>
+      <h2>{props.isfinished ? 'Finished Tasks' : 'Not Finished Tasks'}</h2>
       <ul>
         {props.todos
-          .filter((todo) => todo.isFinished === props.isFinished)
+          .filter((todo) => todo.isfinished === props.isfinished)
           .map((todo) => (
             <TodoPresenter
               key={todo.id}
