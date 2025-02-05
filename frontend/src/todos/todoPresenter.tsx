@@ -20,10 +20,10 @@ function TodoPresenter({
       <div className="todoActions">
         {formatDate(todo.date)}
         <button
-          className={todo.isFinished ? 'finishedButton' : 'unfinishedButton'}
+          className={todo.isfinished ? 'finishedButton' : 'unfinishedButton'}
           onClick={onToggle}
         >
-          {todo.isFinished ? 'unfinished' : 'finished'}
+          {todo.isfinished ? 'unfinished' : 'finished'}
         </button>
         <button className="deleteOneTodos" onClick={onDelete}>
           delete
