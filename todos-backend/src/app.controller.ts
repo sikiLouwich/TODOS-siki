@@ -30,6 +30,16 @@ export class AppController {
     return this.appService.toggleTodo(id);
   }
 
+  @Patch('/:id/edit-date')
+  editTodoDate(
+    @Param('id') id: string,
+    @Body() body: { name: string; date: string }
+  ) {
+    const { name, date } = body;
+    const dateInDateFormat = new Date(date);
+    return this.appService.editTodo(id,name, dateInDateFormat);
+  }
+
   @Delete('/all')
   deleteAllTodos() {
     return this.appService.deleteAllTodos();

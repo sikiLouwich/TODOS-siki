@@ -5,7 +5,7 @@ import { Todo } from './todo';
 import TodosListPresenter from './todoListPresenter';
 import Spinner from './spinner';
 
-const MESSAGE_POST = ", please try again or check your network connection"
+const MESSAGE_POST = ', please try again or check your network connection';
 const URL = '/todos/';
 
 type TodosStates =
@@ -17,7 +17,7 @@ type TodosStates =
 function createDummyTodo(name: string, date: Date): Todo {
   return {
     id: crypto.randomUUID(),
-    isfinished: false,
+    isFinished: false,
     name: name,
     date: date,
   };
@@ -83,7 +83,7 @@ function TodosList() {
           data: currentTodos.data.filter((todo) => todo.id !== dummyTodo.id),
         };
       });
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -94,7 +94,7 @@ function TodosList() {
     setTodos({
       status: 'loaded',
       data: todos.data.map((todo) =>
-        todo.id === todoId ? { ...todo, isfinished: !todo.isfinished } : todo
+        todo.id === todoId ? { ...todo, isFinished: !todo.isFinished } : todo
       ),
     });
     try {
@@ -104,7 +104,7 @@ function TodosList() {
       }
     } catch (error: any) {
       getTodos();
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -130,7 +130,7 @@ function TodosList() {
           data: [...currentTodos.data, todoBackup] as Todo[],
         };
       });
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -153,7 +153,45 @@ function TodosList() {
           data: todosBackup,
         };
       });
-      alert(error.message)
+      alert(error.message);
+    }
+  }
+
+  async function handleEdit(todoId: string, newName: string, newDate: string) {
+    if (todos.status !== 'loaded') {
+      return;
+    }
+    const todo = todos.data.find((todo) => todo.id === todoId);
+    if (!todo) {
+      return;
+    }
+
+    const isValidDate = newDate ? new Date(newDate).getTime() : NaN;
+    if (!newDate || isNaN(isValidDate)) {
+      return;
+    }
+
+    setTodos({
+      status: 'loaded',
+      data: todos.data.map((todo) =>
+        todo.id === todoId
+          ? { ...todo, date: new Date(newDate), name: newName }
+          : todo
+      ),
+    });
+
+    try {
+      const response = await fetch(`${URL}${todoId}/edit-date`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: newDate, name: newName }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error editing todos! ${MESSAGE_POST}`);
+      }
+    } catch (error: any) {
+      getTodos();
+      alert(error.message);
     }
   }
 
@@ -170,6 +208,7 @@ function TodosList() {
           handleDeleteAll={handleDeleteAll}
           handleToggle={handleToggle}
           handleDelete={handleDelete}
+          handleEdit={handleEdit}
         />
       );
     case 'pending':
@@ -183,6 +222,7 @@ interface TodosContainer {
   handleDeleteAll: () => void;
   handleToggle: (todoId: string) => void;
   handleDelete: (todoId: string) => void;
+  handleEdit: (todoId: string, newName: string, newDate: string) => void;
 }
 
 function BodyPresenter(props: TodosContainer) {
@@ -196,15 +236,17 @@ function BodyPresenter(props: TodosContainer) {
         <div className="listsOfTodos">
           <TodosListPresenter
             todos={props.todos}
-            isfinished={false}
+            isFinished={false}
             onToggle={props.handleToggle}
             onDelete={props.handleDelete}
+            onEdit={props.handleEdit}
           />
           <TodosListPresenter
             todos={props.todos}
-            isfinished={true}
+            isFinished={true}
             onToggle={props.handleToggle}
             onDelete={props.handleDelete}
+            onEdit={props.handleEdit}
           />
         </div>
       </div>

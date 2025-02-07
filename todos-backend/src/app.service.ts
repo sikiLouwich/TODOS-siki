@@ -6,7 +6,7 @@ export class AppService {
   constructor(private readonly dbService: AppDBService) {}
 
   //GET
-  getTodos(){
+  getTodos() {
     return this.dbService.getTodos();
   }
 
@@ -19,14 +19,19 @@ export class AppService {
   toggleTodo(id: string) {
     return this.dbService.toggleTodo(id);
   }
-  
+
+  //PATCH EDIT DATE
+  editTodo(id: string, name: string, date: Date) {
+    return this.dbService.editTodoDate(id, name, date);
+  }
+
   //DELETE
   deleteTodo(id: string) {
     return this.dbService.deleteTodo(id);
   }
 
   //DELETE ALL
-  deleteAllTodos(){
+  deleteAllTodos() {
     return this.dbService.deleteAllTodos();
   }
 }
