@@ -6,6 +6,7 @@ export interface TodosListProps {
   isFinished: boolean;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (todoId: string, newName: string, newDate: string) => void;
 }
 
 function TodosListPresenter(props: TodosListProps) {
@@ -21,6 +22,7 @@ function TodosListPresenter(props: TodosListProps) {
               todo={todo}
               onToggle={() => props.onToggle(todo.id)}
               onDelete={() => props.onDelete(todo.id)}
+              onEdit={props.onEdit}
             />
           ))}
       </ul>
