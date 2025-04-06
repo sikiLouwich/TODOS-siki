@@ -1,10 +1,12 @@
 /* General styling */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
   text-align: center;
   display: grid;
+  min-height: 100vh;
 }
 
 /* Header and buttons */
@@ -36,13 +38,46 @@
 }
 
 /* Section headers */
+.notFinished,
+.finished {
+  min-height: 500px;
+  height: 85vh;
+  overflow-y: auto;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #1a1a1a;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .notFinished h2,
 .finished h2 {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  background-color: #1a1a1a;
+  padding: 10px 0;
+  z-index: 10;
 }
 
+
+.todosContainer {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.listsOfTodos{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  height: 100%;
+  flex: 1;
+}
 /* Todo list container */
 .listsOfTodos ul {
   list-style-type: none; /* Remove default bullet points */
@@ -52,19 +87,27 @@
 
 .listsOfTodos li {
   display: flex;
-  align-items: center; /* Vertically center items */
+  align-items: flex-start; /* Align at the top for better wrapping */
   justify-content: space-between; /* Push content to edges */
   margin-bottom: 1rem; /* Add spacing between items */
-  padding: 0.5rem;
+  padding: 1rem;
   border: 1px solid #444;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #222;
+  min-height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Todo details on the left */
 .listsOfTodos .todoDetails {
   display: flex;
-  align-items: center; /* Align text with the dot */
+  align-items: flex-start; /* Align items at the top */
+  flex-direction: column;
+  max-width: 65%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding-right: 10px;
 }
 
 .listsOfTodos .todoDetails span {
@@ -73,9 +116,21 @@
 
 .listsOfTodos .todoDetails strong {
   margin-right: 0.5rem; /* Add space between name and date */
+  text-align: left;
+  display: block;
+  width: 100%;
 }
 
 /* Buttons on the right */
+.listsOfTodos .todoActions {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 120px;
+  margin-left: 20px;
+  padding-left: 20px;
+  border-left: 1px solid #444;
+}
+
 .listsOfTodos .todoActions button {
   margin-left: 0.5rem; /* Add spacing between buttons */
   padding: 0.5rem 1rem;
@@ -170,6 +225,10 @@ body {
   background-color: #111;
   color: #fff;
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {
