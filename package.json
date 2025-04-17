@@ -2,25 +2,16 @@
   "name": "todos-siki",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
   "scripts": {
-    "watch": "npm run frontend:build && npm run frontend:copy && npm run server:build",
-    "server:build" :"tsc -w & node --watch ./dist/server.js",
+    "start": "npm run build && npm run serve",
+    "build": "npm run frontend:build && npm run copy-frontend && npm run backend:build",
+    "serve": "cd todos-backend && npm run start",
     "frontend:build": "cd frontend && npm run build",
-    "frontend:copy": "mkdir -p dist && cp -r frontend/dist/* dist/",
-    "serve:start": "node dist/server.js"
+    "backend:build": "cd todos-backend && npm run build",
+    "copy-frontend": "cp -r frontend/dist/* todos-backend/public/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "typescript": "^5.7.2"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2"
-  }
+  "devDependencies": {}
 }

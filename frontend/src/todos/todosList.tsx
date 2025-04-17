@@ -5,8 +5,8 @@ import { Todo } from './todo';
 import TodosListPresenter from './todoListPresenter';
 import Spinner from './spinner';
 
-const MESSAGE_POST = ", please try again or check your network connection"
-const URL = 'http://localhost:3000/api/todos/';
+const MESSAGE_POST = ', please try again or check your network connection';
+const URL = '/todos/';
 
 type TodosStates =
   | { status: 'idle' }
@@ -83,7 +83,7 @@ function TodosList() {
           data: currentTodos.data.filter((todo) => todo.id !== dummyTodo.id),
         };
       });
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -100,11 +100,11 @@ function TodosList() {
     try {
       const response = await fetch(`${URL}${todoId}`, { method: 'PATCH' });
       if (!response.ok) {
-        throw new Error(`Error toggling todos!${MESSAGE_POST}`);
+        throw new Error(`Error toggling todos! ${MESSAGE_POST}`);
       }
     } catch (error: any) {
       getTodos();
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -130,7 +130,7 @@ function TodosList() {
           data: [...currentTodos.data, todoBackup] as Todo[],
         };
       });
-      alert(error.message)
+      alert(error.message);
     }
   }
 
@@ -139,7 +139,7 @@ function TodosList() {
     const todosBackup = [...todos.data];
     setTodos({ status: 'loaded', data: [] });
     try {
-      const response = await fetch(`${URL}/all`, { method: 'DELETE' });
+      const response = await fetch(`${URL}all`, { method: 'DELETE' });
       if (!response.ok) {
         throw new Error(`Error deleting all todos!${MESSAGE_POST}`);
       }
@@ -153,7 +153,45 @@ function TodosList() {
           data: todosBackup,
         };
       });
-      alert(error.message)
+      alert(error.message);
+    }
+  }
+
+  async function handleEdit(todoId: string, newName: string, newDate: string) {
+    if (todos.status !== 'loaded') {
+      return;
+    }
+    const todo = todos.data.find((todo) => todo.id === todoId);
+    if (!todo) {
+      return;
+    }
+
+    const isValidDate = newDate ? new Date(newDate).getTime() : NaN;
+    if (!newDate || isNaN(isValidDate)) {
+      return;
+    }
+
+    setTodos({
+      status: 'loaded',
+      data: todos.data.map((todo) =>
+        todo.id === todoId
+          ? { ...todo, date: new Date(newDate), name: newName }
+          : todo
+      ),
+    });
+
+    try {
+      const response = await fetch(`${URL}${todoId}/edit-date`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: newDate, name: newName }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error editing todos! ${MESSAGE_POST}`);
+      }
+    } catch (error: any) {
+      getTodos();
+      alert(error.message);
     }
   }
 
@@ -170,6 +208,7 @@ function TodosList() {
           handleDeleteAll={handleDeleteAll}
           handleToggle={handleToggle}
           handleDelete={handleDelete}
+          handleEdit={handleEdit}
         />
       );
     case 'pending':
@@ -183,28 +222,31 @@ interface TodosContainer {
   handleDeleteAll: () => void;
   handleToggle: (todoId: string) => void;
   handleDelete: (todoId: string) => void;
+  handleEdit: (todoId: string, newName: string, newDate: string) => void;
 }
 
-function BodyPresenter(prpos: TodosContainer) {
+function BodyPresenter(props: TodosContainer) {
   return (
     <>
-      <div>
+      <div className="todosContainer">
         <TodoInput
-          handleAddTodo={prpos.handleAddTodo}
-          handleDeleteAll={prpos.handleDeleteAll}
+          handleAddTodo={props.handleAddTodo}
+          handleDeleteAll={props.handleDeleteAll}
         />
         <div className="listsOfTodos">
           <TodosListPresenter
-            todos={prpos.todos}
+            todos={props.todos}
             isFinished={false}
-            onToggle={prpos.handleToggle}
-            onDelete={prpos.handleDelete}
+            onToggle={props.handleToggle}
+            onDelete={props.handleDelete}
+            onEdit={props.handleEdit}
           />
           <TodosListPresenter
-            todos={prpos.todos}
+            todos={props.todos}
             isFinished={true}
-            onToggle={prpos.handleToggle}
-            onDelete={prpos.handleDelete}
+            onToggle={props.handleToggle}
+            onDelete={props.handleDelete}
+            onEdit={props.handleEdit}
           />
         </div>
       </div>

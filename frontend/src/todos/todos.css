@@ -1,10 +1,12 @@
 /* General styling */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 1rem;
   text-align: center;
   display: grid;
+  min-height: 100vh;
 }
 
 /* Header and buttons */
@@ -36,13 +38,46 @@
 }
 
 /* Section headers */
+.notFinished,
+.finished {
+  min-height: 500px;
+  height: 85vh;
+  overflow-y: auto;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #1a1a1a;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .notFinished h2,
 .finished h2 {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  background-color: #1a1a1a;
+  padding: 10px 0;
+  z-index: 10;
 }
 
+
+.todosContainer {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.listsOfTodos{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  height: 100%;
+  flex: 1;
+}
 /* Todo list container */
 .listsOfTodos ul {
   list-style-type: none; /* Remove default bullet points */
@@ -51,20 +86,28 @@
 }
 
 .listsOfTodos li {
-  display: flex;
-  align-items: center; /* Vertically center items */
+  display:flex;
+  align-items: flex; /* Align at the top for better wrapping */
   justify-content: space-between; /* Push content to edges */
-  margin-bottom: 1rem; /* Add spacing between items */
-  padding: 0.5rem;
+  margin-bottom: 0.5rem; /* Add spacing between items */
+  padding: 1rem;
   border: 1px solid #444;
-  border-radius: 4px;
+  border-radius: 8px;
   background-color: #222;
+  min-height: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Todo details on the left */
 .listsOfTodos .todoDetails {
   display: flex;
-  align-items: center; /* Align text with the dot */
+  align-items: center; /* Align items at the top */
+  flex-direction: row;
+  max-width: 65%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding-right: 1px;
 }
 
 .listsOfTodos .todoDetails span {
@@ -73,9 +116,21 @@
 
 .listsOfTodos .todoDetails strong {
   margin-right: 0.5rem; /* Add space between name and date */
+  text-align: left;
 }
 
 /* Buttons on the right */
+.listsOfTodos .todoActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 120px;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid #444;
+}
+
 .listsOfTodos .todoActions button {
   margin-left: 0.5rem; /* Add spacing between buttons */
   padding: 0.5rem 1rem;
@@ -94,11 +149,60 @@
   background-color: #b0157a;
 }
 
+.editButton {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #d08c3a;
+}
+
 .finishedButton {
   background-color: #5562a6;
   color: white;
   width: 120px;
   text-align: center;
+}
+.editor {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  max-width: 28rem;
+}
+
+.editor input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.editor input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+#saveButton {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+#saveButton:hover {
+  background-color: #2563eb;
+}
+
+#saveButton:active {
+  background-color: #1d4ed8;
+}
+
+#saveButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #f3f4f6;
 }
 
 .finishedButton:hover {
@@ -121,6 +225,10 @@ body {
   background-color: #111;
   color: #fff;
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {
